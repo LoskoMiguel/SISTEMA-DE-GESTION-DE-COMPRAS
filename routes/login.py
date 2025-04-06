@@ -2,33 +2,37 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.conexion import get_conection
-from admin import crear_usuario
-
-conn = get_conection()
-cursor = conn.cursor()
+from admin.registrar import registrar_usuario
 
 def login():
+    conn = get_conection()
+    cursor = conn.cursor()
     intentos = 0
 
     while intentos < 3:
-        username = input("Cual es el nombre de usuario:  ")
-        contrasena = input("Cual es la contrasena:  ")
+        username = input("Cual es el nombre de usuario: ")
+        contrasena = input("Cual es la contrasena: ")
 
         cursor.execute("SELECT rol FROM users WHERE username = ? AND password = ?", (username, contrasena))
         usuario = cursor.fetchone()
-        rol = usuario[0] if usuario else None
-
+        
         if usuario:
+            rol = usuario[0]
             print("✅ Bienvenido al sistema")
-            print(f"Tu rol es: {rol}")
             
-            if rol == "admin":
-                opcion = input("""Elige Una Opcion:
-                      1. Crear un nuevo usuario:  """)
-                
-                if opcion == "1":
-                    pass
-
+            if rol == 2:
+                print("\n👤 Rol: Administrador")
+                while True:
+                    opcion = input("""
+                    Elige Una Opcion:
+                    1. Crear un nuevo usuario
+                    Opción: """)
+                    
+                    if opcion == "1":
+                        registrar_usuario()
+            else:
+                print("\n👤 Rol: Usuario")
+            break
         else:
             intentos += 1
             print("❌ Usuario o contraseña incorrectos")
@@ -42,4 +46,5 @@ def login():
 
     conn.close()
 
-login()
+if __name__ == "__main__":
+    login()
