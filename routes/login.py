@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.conexion import get_conection
+from admin import crear_usuario
 
 conn = get_conection()
 cursor = conn.cursor()
@@ -15,10 +16,19 @@ def login():
 
         cursor.execute("SELECT rol FROM users WHERE username = ? AND password = ?", (username, contrasena))
         usuario = cursor.fetchone()
+        rol = usuario[0] if usuario else None
 
         if usuario:
             print("✅ Bienvenido al sistema")
-            break
+            print(f"Tu rol es: {rol}")
+            
+            if rol == "admin":
+                opcion = input("""Elige Una Opcion:
+                      1. Crear un nuevo usuario:  """)
+                
+                if opcion == "1":
+                    pass
+
         else:
             intentos += 1
             print("❌ Usuario o contraseña incorrectos")
